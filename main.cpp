@@ -1,18 +1,12 @@
 #include <iostream>
 
+#include "player.h"
 
-int main(int argc, char const *argv[]) {
-    
-    int *int_ptr {nullptr};
-    int_ptr = new int;               // Allocate an Integer on the heap
+int main() {
+        
+    Player p {"player1234", 10, 5};
+    std::cout << p.getUsername() <<std::endl;
+    std::cout << p.getHealth() <<std::endl;
 
-    int *array_ptr {nullptr};
-    size_t size {100000};            // User enter a size at runtime (ie using cin)
-    array_ptr = new int[size];       // Allocate an n Integers on the heap
-
-
-    
-    // I you Allocate, You MUST deallocate
-    delete int_ptr;
-    delete [] array_ptr;
+    return 0;
 }

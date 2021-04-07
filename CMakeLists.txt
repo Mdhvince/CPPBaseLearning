@@ -6,6 +6,9 @@ add_definitions(-std=c++14)
 set(CXX_FLAGS "-Wall")
 
 set(EXECUTABLE app)
-add_executable(${EXECUTABLE} main.cpp)
+
+add_executable(${EXECUTABLE}
+               main.cpp
+               player.cpp)
 
 target_link_libraries(${EXECUTABLE} PRIVATE ${OpenCV_LIBS})
