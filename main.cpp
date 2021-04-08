@@ -8,5 +8,7 @@ int main() {
     std::cout << p.getUsername() <<std::endl;
     std::cout << p.getHealth() <<std::endl;
 
+    Player p2 {Player{"ninja", 10, 5}};
+
     return 0;
 }

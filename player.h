@@ -12,14 +12,15 @@ public:
     Player(std::string username, int xp, int health);
     Player();
     Player(const Player &source);
+    Player(Player &&source);
     ~Player();
 
-    void talk(std::string);
-    bool is_dead();
+    void talk(std::string) const;
+    bool is_dead() const;
 
-    std::string getUsername();
+    std::string getUsername() const;
     void setUsername(std::string);
-    int getHealth();
+    int getHealth() const;
 };
 
 #endif
