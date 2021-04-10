@@ -26,3 +26,16 @@ bool Player::is_dead() const { return (this->xp < 1) ? true : false; }
 std::string Player::getUsername() const { return this->username; }
 int Player::getHealth() const { return this->health; }
 void Player::setUsername(std::string uname) { this->username = uname; }
+
+bool Player::operator==(const Player &rhs) const{
+    if(xp == rhs.xp && health == rhs.health)
+        return true;
+    return false;
+}
+
+
+std::ostream &operator<<(std::ostream &os, const Player &obj){
+    os << obj.username;
+    // os << obj.getUsername(); if it was'nt a friend
+    return os;
+}

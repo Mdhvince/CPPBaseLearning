@@ -196,6 +196,36 @@ int main(){
 }
 ```
 ## Operator Overloading
+```cpp
+// overloaded operators declaration in .h
+bool operator==(const Player &rhs) const;
+
+// overloaded operators implementation in .cpp
+bool Player::operator==(const Player &rhs) const{
+    if(xp == rhs.xp && health == rhs.health)
+        return true;
+    return false;
+}
+```
+to overload the insertion (cout) operator it should be done in the private section of the class.  
+
+```cpp
+// overloaded insertion declaration in .h
+class Player {
+    std::string username;
+    int xp;
+    int health;
+    friend std::ostream &operator<<(std::ostream &os, const Player &obj);
+};
+
+// implementqtion in .cpp
+std::ostream &operator<<(std::ostream &os, const Player &obj){
+    os << obj.username;
+    // os << obj.getUsername(); if it was'nt a friend
+    return os;
+}
+```
+
 ## Inhirithance
 ## Polymorphism
 # Exception handling
