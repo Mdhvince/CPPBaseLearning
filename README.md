@@ -227,7 +227,114 @@ std::ostream &operator<<(std::ostream &os, const Player &obj){
 ```
 
 ## Inhirithance
+Main change: Attributes of the base class should be protected, not private.  
+
+```cpp
+class Base {
+protected:
+    // attr
+public:
+    Base();
+    Base(int name);
+    ~Base();
+    //methods
+};
+```
+
+Devived class: The access-specifier if private by default. We should choose between private public protected.  
+- public : is-a relationship (most common)  
+- private and protected : has-a relationship "Derived has a Base class"  
+  
+The derived class has access to the methods and protected attributes of the base class. So only declare its specialized methods,  its additional attributes if there is some. Overridding or Redefining Base class methods is also possible.  
+  
+Derived does __NOT__ inherit:  
+- Base class constructors
+- Base class destructor
+- Base class overloaded operators : But can be invoked from derived
+- Base class friend functions : But can be invoked from derived  
+```cpp
+class Derived: access-specifier Base {
+    // as usual
+    int derived_name;
+public:
+    Derived();
+    Derived(int derived_name);
+    ~Derived();
+
+};
+
+// class implementation of the Dirived class
+Derived::Derived():
+    : Base(), derived_name{"None"} {
+}
+Derived::Derived(int derived_name):
+    : Base(derived_name), derived_name{derived_name} {
+}
+```
+In both initialization, if we do not invoke the Base constructor in the initialization, the default Base constructor will be called.  
+  
+We can also call Base class methods inside a dirived methods if we need to:
+```cpp
+void Derived::myDerived(int a){
+    a += 10;
+    Base::myBase(a);
+}
+```
+  
 ## Polymorphism
+Two kind of polymorphism :  
+- __Compile time__ / __early binding__ / __static binding__ polymorphism : Overloading Methods and Operators. This kind of polymorphism is the fastest, because it is done at compile time.
+- __Run time__ / __late binding__ / __dynamic binding__ polymorphism : It is like assigning a different meaning to the same function at run time. This kind of pylymorphism occurs at runtime and gives allows us to have a more readable program.  
+  
+Requierements for dynqmic Polymorphism:
+- Have Inhiritance
+- Have a base class pointer or a base class reference `Player *p = new Player();`
+- Have virtual functions and a virtual destructor
+
+First declare the methods that should be overriden as virtual in the Base class and the virtual destructor.  
+```cpp
+class Player{
+protected:
+    // ...
+public:
+    // ...
+    virtual void talk();
+    virtual ~Player();
+};
+```
+In the derived class, override the Base class function, the function should match exactly the base class function, otherwise this will be a redefinition (which is statically bound).  
+the `virtual` keyword is not mandatory in the derived class but it is a good practice.  
+To avoid errors between overriding or redefining, we can add the `override` keyword to make the compiler raise an error if we are not overrifing.
+```cpp
+class WeakPlayer: public Player{
+private:
+    // ...
+public:
+    // ...
+    virtual void talk() override;
+};
+```
+And now, Dynamic Polymorphism in action:
+```cpp
+int main(){
+    Player *century = new WeakPlayer();
+    century->talk(); // This will call the WeakPlayer version of talk
+    delete century;
+}
+```
+  
+For a __better compiler optimization__ we can use the `final` specifier at a class level or function level.  
+At class level : Prevent a class from being derived.  
+```cpp
+class MyClass final {/*...*/};
+// or
+class Derived final: public Base {/*...*/};
+```
+At function level : Prevent a function from being overriden.
+```cpp
+void myFunction() final;
+```
+
 # Exception handling
 # Files I/O and Streams
 # STL
