@@ -1,7 +1,7 @@
 # Stack and Heap Memory
-Stack memory is for regular operations and stores temporary variables. Nothing fancy.  
+Stack memory is for regular operations and stores temporary variables. The stack space is reserved at compile time but the data is allocated at runtime.  
   
-The heap memory can be reffered as a free store, we can put/Allocate as much things, objects, images as we want (well be reasonable, there is a limit - otherwise we can cause a memory leak). But we need extra care because the heap memory is also a LIFETIME memory, so we have to free this memory when we are done with it. If we have an array but we do not know how big it is gonna be at runtime, it could be a good idea to allocate its memory dynamically on the heap (see section on dynamic memory allocation for more).
+The heap memory can be reffered as a free store, we can put/Allocate as much things, objects, images as we want (well, there is a limit - otherwise we can cause a memory leak). But we need extra care because the heap memory is also a LIFETIME memory, so we have to free this memory when we are done with it. If we have an array but we do not know how big it is gonna be at runtime, it could be a good idea to allocate its memory dynamically on the heap (see section on dynamic memory allocation for more).
 
 # Pointers
 It's just a variable pointing to another variable or function.  
@@ -39,13 +39,13 @@ delete [] array_ptr;
 ```
 
 # OOP
-I always thinking of 4 main blocks when defining a class:  
+I always think of 4 main blocks when defining a class:  
 - Attributes
 - Constructors / Destructor
 - Methods
 - Getters and Setters
   
-Tip : If a multiple .cpp files include the same .h file, so in general if a .h file is included more n times in a project, the compiler will process it n times and give us an duplicate declaration error, to avoid this we need to tell the compiler to only process it once. We do that by wrapping an include guard around the class declaration.  
+Tip : If multiple .cpp files include the same .h file, so in general if a .h file is included  n times in a project, the compiler will process it n times and give us an duplicate declaration error, to avoid this we need to tell the compiler to only process it once. We do that by wrapping an include guard around the class declaration.  
 
 ```cpp
 #ifndef _CLASSNAME_H_
@@ -119,7 +119,7 @@ void Player::setUsername(std::string uname) { this->username = uname; }
 ```
   
 # Move constructor (The C++ Move semantic) - More advanced
-In some projects we tend to pass our object in functions or initialize another object using the existing object, anyway we tend to use the copy constructor. And this can be very computationnaly innefficient. To handle this, we have the move constructor. It allows us to "move" or "displace" the constructor without copying and this is VERY computationally efficent and possible since C++11.
+In some projects we tend to pass our object in functions or initialize another object using the existing object, anyway we tend to use the copy constructor. And this can be very computationally innefficient. To handle this, we have use the move constructor. It allows us to "move" or "displace" the constructor without copying and this is VERY computationally efficent and possible since C++11.
 
 ```cpp
 // Move constructor implementation (note the r-value reference &&)
@@ -160,8 +160,8 @@ myvector.push_back(p);
 This will call the copy constructor because at this point player is an L-value.
 
 ### Note on static class members
-Static variables share class-wide information. They belong to the class and not on a signe object of that class. For example, if we have multiples instances of the same class (instances), we can use static attribute to share this information.  
-Let's say we want to count the number of instances of that class. We can create a static variable that will be incremennted by one in the constructor and decremented by one in the destructor.  
+Static variables share class-wide information. They belong to the class and not on a single object of that class. For example, if we have multiples instances of the same class (instances), we can use static attribute to share this information.  
+Let's say we want to count the number of instances of that class. We can create a static variable that will be incremented by one in the constructor and decremented by one in the destructor.  
 - They are independant of the object
 - It makes sense to call them using the class name directly
 ```cpp
@@ -302,9 +302,11 @@ public:
     virtual ~Player();
 };
 ```
+
 In the derived class, override the Base class function, the function should match exactly the base class function, otherwise this will be a redefinition (which is statically bound).  
 the `virtual` keyword is not mandatory in the derived class but it is a good practice.  
 To avoid errors between overriding or redefining, we can add the `override` keyword to make the compiler raise an error if we are not overrifing.
+
 ```cpp
 class WeakPlayer: public Player{
 private:
@@ -335,7 +337,118 @@ At function level : Prevent a function from being overriden.
 void myFunction() final;
 ```
 
+
+# Smart Pointers
+Note : We cannot do pointer arithmetic with them (++, -- etc.)  
+We cqnnot copy it (for the unique ptr), we can move it instead using `std::move(ptr)`  
+
+```cpp
+#include <memory>
+
+// make_unique is available sinc C++14 otherwise we could use ... = { new Player{"player1234", 10, 5} }
+std::unique_ptr<Player> ptr = std::make_unique<Player>("player1234", 10, 5);
+// or 
+auto ptr = std::make_unique<Player>("player1234", 10, 5);
+ptr.get()                                   // return the adress of the object pointed
+ptr.reset()                                 // nulls out the pointer
+
+std::shared_ptr<Player> sh_ptr1 = std::make_shared<Player>("player1234", 10, 5);
+std::shared_ptr<Player> sh_ptr2 {sh_ptr1};  // now there a pointing to the same object (shared ownership)
+sh_ptr1.use_count()                         // return nb of shared_ptr reffering to the same heap object (or sh_ptr2.use_count())
+
+```
+
+
+
 # Exception handling
+Should be used in synchronous code, not async.  
+Terminology:  
+- Exception Object: it signals when an error has occured
+- Throwing/raising an exception: code that detects that an exception hase occured or will occur.
+It describes the error to another part of the program that know how to handle the error.
+- Catching/Handling an exception: code that handles the exception (May or may not cause the program to terminate)  
+  
+Synthax:  
+- We try
+- We throw an object by value
+- We catch by reference (or const reference)
+```cpp
+
+float calculate_avg(int sum, int total){
+    if(total == 0)
+        throw 0;
+    if(total < 0)
+        throw std::string {"Negative value error"};
+
+    return static_cast<float>(sum) / total;
+}
+
+// raise exception for 0 division
+float average {};
+try{
+    average = calculate_avg(56, 100)
+    std::cout<<"Average: "<< average <<std::endl;
+}
+catch(int &ex) { std::cerr <<"can't divide by zero"<<std::endl; }
+catch(std::string &ex) { std::cerr << ex <<std::endl; }
+catch(...) { std::cerr<<"Handling unknown exception"<<std::endl; }
+```
+Best practice is to throw an object, not a primitive type (like throw 0).  
+For this, we have to use Exception classes (User-defined exceptions).  
+
+```cpp
+class DivideByZeroException{
+
+};
+
+float calculate_avg(int sum, int total){
+    if(total == 0)
+        throw DivideByZeroException();
+    return static_cast<float>(sum) / total;
+}
+
+float average {};
+try{
+    average = calculate_avg(56, 100)
+    std::cout<<"Average: "<< average <<std::endl;
+}
+catch(const DivideByZeroException &ex) { std::cerr <<"can't divide by zero"<<std::endl; }
+
+```
+We can derive our Exception class from the C++ STL exception class.  
+The C++ STL exception class provive useful functions like the virtual function `what()` that
+return a c-style string that describe the exception that occur.
+```cpp
+class DivideByZeroException: public std::exception{
+public:
+    DivideByZeroException() noexcept = default; // noexcept tells that this cannot raise an exection
+    ~DivideByZeroException() = default;
+
+    virtual const char *what() const noexcept{
+        return "Can't divide by zero";
+    }
+};
+
+
+float calculate_avg(int sum, int total){
+    if(total == 0)
+        throw DivideByZeroException{};
+    return static_cast<float>(sum) / total;
+}
+
+float average {};
+try{
+    average = calculate_avg(56, 100)
+    std::cout<<"Average: "<< average <<std::endl;
+}
+catch(const DivideByZeroException &ex) {
+    std::cerr <<ex.what()<<std::endl;
+}
+
+```
+
+
+
 # Files I/O and Streams
 # STL
 # Use arguments in main
