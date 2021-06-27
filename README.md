@@ -447,9 +447,142 @@ catch(const DivideByZeroException &ex) {
 
 ```
 
-
-
 # Files I/O and Streams
+__Some formatting:__  
+- `#include <iomanip>`
+- `std::cout << std::boolalpha;` All next `std::cout` will display true/false instead of 1/0 
+- `std::cout << std::boolalpha;` Back to normal
+- `std::cout << std::showpos;` Show the (+) or (-) sign of a number
+- `std::cout<< std::setprecision(3) << std::fixed;` 3 digits after decimal point.
+
+```cpp
+#include <iomanip>
+
+int a {255};
+std::cout<< std::hex;
+std::cout<< a <<std::endl;  // Display ff
+```
+
+```cpp
+#include <iomanip>
+
+int a {255};
+std::cout<< std::showbase;
+std::cout<< std::hex;
+std::cout<< a <<std::endl;  // Display 0xff
+```
+
+```cpp
+#include <iomanip>
+
+int a {255};
+std::cout<< std::showbase << std::uppercase;
+std::cout<< std::hex;
+std::cout<< a <<std::endl;  // Display 0XFF
+```
+
+`std::cout<< std::resetiosflags(std::ios::showpos)` : Reset a the manip passed in parameter to default.  
+We can find more here : https://en.cppreference.com/w/cpp/io/manip
+
+__Reading from text file:__  
+- `#include <fstream>`
+- declare an fstream or ifstream object
+- connect the object to a file on the system (opens it)
+- read data from the file via the stream
+- close the stream
+
+```cpp
+std::ifstream myInfile {filepath}; // read-only object    
+std::string line {};
+
+if(!myInfile){
+    std::cerr<<"File not found!" <<std::endl;
+    return 1;
+}
+
+while(!myInfile.eof()){
+    std::getline(myInfile, line);    // read a line
+    std::cout << line << std::endl;
+}
+myInfile.close();
+```
+
+```cpp
+myInfile >> word;  // read a word
+std::cout << word << std::endl;
+```
+
+__Writing to a text file__   
+By default C++ create the file if not exist. If it does, it will overwrite the content unless we specify.
+
+```cpp
+std::ofstream myFile_default {"../myfile_out.txt"}; // overwritting mode
+std::ofstream myFile_append {"../myfile_out.txt", std::ios::app}; // append mode  
+
+std::string date {"2013-10-14"};
+std::string avis {"good"};
+std::string cause {"no reason"};
+
+if(!myFile_append){
+    std::cerr<<"File not found!" <<std::endl;
+    return 1;
+}
+
+for(size_t i=0; i<10; i++){
+
+    myFile_append << std::setw(date.length()+5) << std::left << date 
+                << std::setw(avis.length()+5) << avis
+                << std::setw(cause.length()+5) << cause
+                << std::endl;
+}
+myFile_append.close();
+```
+__Streams__: Very useful for data validation
+```cpp
+// placeholders
+int num {};
+float total {};
+std::string name {};
+
+std::string data_from_user {"Larry 70 100.57"};
+```
+
+store data from user into the input stream
+```cpp
+std::istringstream iss {data_from_user};
+```
+
+variables read from the stream. if this line runs, that meanvthe data from user is valid (match the variable types). Streams will allow to validate the data.
+```cpp
+iss >> name >> num >> total;
+
+std::cout<< std::setw(10) << std::left << name
+            << std::setw(10) << num
+            << std::setw(10) << total
+            << std::endl;
+```
+
+Output Stream useful for tranfering data.
+```cpp
+// placeholders
+int num {70};
+float total {100.57};
+std::string name {"Larry"};
+
+std::string data_from_user {"Larry 70 100.57"};
+
+// create an output stream
+std::ostringstream oss {};
+
+// variables are written into the stream. Can be useful to transfer data
+oss << std::setw(10) << std::left << name
+    << std::setw(10) << num
+    << std::setw(10) << total
+    << std::endl;
+
+std::cout<< oss.str() <<std::endl;
+```
+
 # STL
 # Use arguments in main
 # C++ Unit tests
