@@ -1,29 +1,33 @@
 #include <iostream>
 #include <iomanip>
-#include <sstream>
+#include <vector>
+#include <algorithm>
+#include <numeric>
 #include <memory>
-
 
 
 int main() {
 
-    // placeholders
-    int num {70};
-    float total {100.57};
-    std::string name {"Larry"};
+    std::vector<int> v {1, 5, 3, 2, 10, 12, 3, 4, 6, 9};
+    std::vector<int> v_square;
+    std::vector<int> v_even;
 
-    std::string data_from_user {"Larry 70 100.57"};
 
-    // create an output stream
-    std::ostringstream oss {};
-
-    // variables are written into the stream. Can be useful to transfer data
-    oss << std::setw(10) << std::left << name
-        << std::setw(10) << num
-        << std::setw(10) << total
-        << std::endl;
+    std::transform(v.begin(), v.end(), std::back_inserter(v_square), [](int &n) { return n * n; });
+    std::copy_if(v.begin(), v.end(), std::back_inserter(v_even), [](const int &n) { return n % 2 == 0; });
     
-    std::cout<< oss.str() <<std::endl;
+    std::for_each(v.begin(), v.end(), [](const int &n) { std::cout << n << "  ";});
+    std::cout << std::endl;
+    std::for_each(v_square.begin(), v_square.end(), [](const int &n) { std::cout << n << "  ";});
+    std::cout << std::endl;
+    std::for_each(v_even.begin(), v_even.end(), [](const int &n) { std::cout << n << "  ";});
+    std::cout << std::endl;
+
+    
+
+    
+    
+    
 
     return 0;
 }

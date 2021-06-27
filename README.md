@@ -584,6 +584,137 @@ std::cout<< oss.str() <<std::endl;
 ```
 
 # STL
-# Use arguments in main
+Sort container from the first element `vec.begin()` to the last+1 element. `v.end()` return an iterator at the location one after the lat element.
+```cpp
+#include <vector>
+#include <algorithm>
+
+std::vector<int> v {1, 5, 3};
+
+std::sort(v.begin(), v.end()); //inplace
+
+for(auto &elt: v)
+    std::cout<< elt <<std::endl;
+```
+
+Reverse elements of a container
+```cpp
+std::reverse(v.begin(), v.end()); //inplace
+```
+
+Sum all the elements of a container
+```cpp
+#include <numeric>
+
+int result_sum {};
+int current_sum {0};
+
+result_sum = std::accumulate(v.begin(), v.end(), current_sum);
+```
+
+Function template synthax
+```cpp
+template<typename T>
+T max(T a, T b){
+    return (a > b) ? a : b;
+}
+```
+
+Class template synthax
+```cpp
+
+template<typename T>
+class Item{
+
+private:
+    std::string name;
+    T value;
+
+public:
+    Item(std::string name, T value)
+        : name{name}, value{value} {}
+    
+    std::string get_name() const {
+        return this->name;
+    }
+    
+    T get_value() const {
+        return this->value;
+    }
+};
+
+```
+
+Iterators:
+- Synthax `container_type::iterator_type iterator_name` or `auto iterator_name`
+- `iterator` normal it - works with `begin` and `end`
+- `reverse_iterator` allow to iterate in reverse - works with `rbegin` and `rend`
+- `const_iterator` - works with `cbegin` and `cend`
+- `const_reverse_iterator` - works with `crbegin` and `crend`
+```cpp
+// reverse loop
+std::vector<int>::reverse_iterator it2 = v.rbegin(); // or auto it2 = v.rbegin();
+
+while (it2 != v.rend()) {
+    std::cout<< *it2 <<std::endl;
+    it2++;
+}
+```
+
+
+```cpp
+
+```
+
+```cpp
+
+```
+
+```cpp
+
+```
+
+```cpp
+
+```
+
+# Best Practices
+- Use cppcheck to check your code (act like a linter)
+
+```shell 
+sudo apt install cppcheck
+cppcheck --enable=all ./*.cpp
+```
+- think twice when using for loop or range based for loop. The operation may already exist in the STL algorithm.
+- use `for_each` with lambdas expression if need to apply operation on elements.
+
+```cpp
+std::for_each(v.begin(), v.end(), [](int &n) { n*=n; });
+std::for_each(v.begin(), v.end(), [](const int &n) { std::cout << n <<std::endl;});
+```
+
+- Prefer range-based for loop or iterator over raw for loop
+- Prefer enum class over traditional enum
+- `std::transform` and `std::for_each` - replaces `map`
+
+```cpp
+std::transform(v.begin(), v.end(), std::back_inserter(v_square), [](int &n) { return n * n; });
+```
+
+- `std::copy_it` and `std::remove_if` - replaces `filter`
+
+```cpp
+std::copy_if(v.begin(), v.end(), std::back_inserter(v_even), [](const int &n) { return n % 2 == 0; });
+```
+
+- Reducing a collection to a scalar : Use `std::accumulate` - replace `reduce`
+- `size_t` for unsigned integer improve code efficiency
+- make `unique_ptr` your default pointer
+- copy constructor, copy assignment operator, move constructor, move assignment operator. Do not create them, leave it to the compiler. If you create one, create all of them.
+- `const` is your friend. Think of it by default. We can get performance boost, less bugs and it help the compiler.
+
+```cpp
+```
+
 # C++ Unit tests
 # CMake : Build C++ projects
